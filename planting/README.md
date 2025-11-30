@@ -1,66 +1,169 @@
-# React + Vite
+# 🌱 Planting Optimisation Tool – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A beautifully designed, modern frontend built using **React**, **Vite**, and **CSS Modules**.  
+This UI powers the Planting Optimisation Tool by providing a fast, interactive, and scalable interface for reforestation insights.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🔥 Project Highlights
 
-## React Compiler
+✨ **Ultra‑fast development** with Vite  
+✨ **Component‑driven UI** with React  
+✨ **Scoped & maintainable styling** using CSS Modules  
+✨ **Clean folder structure** for long‑term scalability  
+✨ **Fully documented** installation, build, and contribution process  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 📸 Preview
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+> ![App Preview](https://raw.githubusercontent.com/HassanIT2003/Planting-Optimisation-Tool/frontend_version1/planting/public/Screenshot)
 
-Planting Optimisation Tool
+---
 
-A modern React project built using Vite, JSX, and CSS Modules for modular and maintainable styling.
+## 📁 Project Structure
 
-🚀 Features
-
-⚡ Vite as the build tool for ultra-fast development
-⚛️ React (JSX) for UI components
-🎨 CSS Modules for scoped, maintainable component-level styling
-🧱 Clean, component-based structure
-🔧 Easy to build, run, and extend
-
-Project Structure
-project-folder/
+```
+project-root/
 │
 ├── src/
-│ ├── components/
-│ │ └── Header.jsx
-│ │ └── Header.module.css
-│ │ └── Footer.css
-│ │ └── Footer.module.css
-│ │ └── Form.css
-│ │ └── Footer.module.css
-│ ├── App.jsx
-│ ├── App.css
-│ ├── main.jsx
+│   ├── components/
+│   │   ├── Header.jsx
+│   │   ├── Header.module.css
+│   │   ├── Footer.jsx
+│   │   ├── Footer.module.css
+│   │   ├── Form.jsx
+│   │   ├── Form.module.css
+│   │
+│   ├── App.jsx
+│   ├── App.css
+│   ├── main.jsx
 │
 ├── index.html
 ├── package.json
 ├── vite.config.js
 └── README.md
+```
 
-🧑‍💻 Installation & Setup
+---
 
-1. Clone or Download the Project
+## 🚀 Installation & Setup
 
-If someone received the project as a ZIP file, they must:
+Follow these steps to get started locally:
 
-Extract the ZIP
-Open the project folder in a terminal
+### **1️⃣ Clone the repository**
+```bash
+git clone https://github.com/<your-username>/Planting-Optimisation-Tool.git
+cd Planting-Optimisation-Tool
+```
 
-2. Install dependencies
-   npm install
+### **2️⃣ Install dependencies**
+```bash
+npm install
+```
 
-3. Start the development server
-   npm run dev
+### **3️⃣ Start the development server**
+```bash
+npm run dev
+```
 
-Vite will start the project on a local server. The terminal will show something like:
-Local: http://localhost:5173/
+Vite will launch the project at:
+
+```
+http://localhost:5173/
+```
+
+Open this in your browser to start developing.
+
+---
+
+## 📦 Build for Production
+
+Generate an optimized build:
+
+```bash
+npm run build
+```
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|-----------|----------|
+| **React** | Dynamic UI components |
+| **Vite** | Dev server & bundler |
+| **CSS Modules** | Scoped styling |
+| **ESLint** | Code standardization |
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions!  
+Follow the workflow below:
+
+### **Create a feature branch**
+```bash
+git checkout -b feature/<feature-name>
+```
+
+### **Commit and push**
+```bash
+git add .
+git commit -m "Describe your changes"
+git push origin feature/<feature-name>
+```
+
+### **Open a Pull Request**
+
+Your PR will be reviewed and merged once approved.
+
+---
+
+## 🧭 Roadmap
+
+- 🔜 Add UI animations  
+- 📊 Implement dashboard visualizations  
+- 🌍 Admin page
+- 🗂️ Improve state management (Redux/Zustand)  
+
+---
+
+## 📄 License
+
+This project follows the main **Planting Optimisation Tool** license.
+
+---
+
+## 🌟 Acknowledgements
+
+Thank you to all contributors supporting this project and sustainable planting initiatives.
+
+---
+
+## 🖼️ Badges (Optional)
+
+You can add shields.io badges like:
+
+```
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
+![License](https://img.shields.io/badge/License-MIT-green)
+```
+
+---
+
+## 📬 Contact
+
+For contributions, issues, or feedback, feel free to contact the team or open an issue in the repository.
+
+---
+
+*Made with ❤️ for the Planting Optimisation Tool ecosystem.*
