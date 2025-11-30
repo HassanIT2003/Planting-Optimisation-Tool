@@ -1,0 +1,39 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(45deg, #2c7a2c, #315731);
+  color: white;
+  margin-bottom: 5em;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 400;
+  font-size: 1.2rem;
+  font-family: "Poppins", sans-serif;
+}
+
+.logo img {
+  height: 90px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(8);
+}
+.nav {
+  display: flex;
+  gap: 5em;
+}
+.nav a {
+  text-decoration: none;
+  color: white;
+  font-weight: 400;
+  transition: color 0.3s;
+}
+
+.nav a:hover {
+  color: #d4f0c2;
+}

@@ -1,0 +1,56 @@
+.footer {
+  background: linear-gradient(45deg, #2c7a2c, #315731);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+  margin-top: 5em;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.brand img {
+  height: 110px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(8.5);
+}
+
+.brand p {
+  max-width: 600px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.copy {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+footer ul {
+  list-style: none;
+  margin-top: 2em;
+}
+footer ul li {
+  margin-bottom: 1em;
+  text-align: left;
+}
+footer ul li a {
+  color: #fff;
+  transition: 0.2s;
+  font-weight: 400;
+  font-size: 1em;
+}
+footer ul li a:hover {
+  color: #b8b8b8;
+}
+
+.brandingwrapper {
+  text-align: left;
+}
