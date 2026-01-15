@@ -26,11 +26,13 @@ export default defineConfig({
   base: "./",
   build: {
     outDir: "./build/dist",
-    lib: {
-      entry: path.resolve(__dirname, "src/index.ts"),
-      name: getPackageNameCamelCase(),
-      formats,
-      fileName: format => fileName[format],
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        calculator: path.resolve(__dirname, 'calculator.html'),
+        recommendations: path.resolve(__dirname, 'recommendations.html'),
+        insights: path.resolve(__dirname, 'insights.html'),
+      },
     },
   },
   test: {
@@ -43,3 +45,4 @@ export default defineConfig({
     },
   },
 });
+

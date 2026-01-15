@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insights | Planting Optimisation Tool</title>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="logo">
+  <img
+    src="/assets/images/Media (1).jpeg"
+    alt="Planting Optimisation Tool Logo"
+    class="logo-img"
+  />
+</div>
+
+      </div>
+      <nav class="nav">
+        <a href="/index.html" class="nav-link" data-page="home">Home</a>
+        <a href="/recommendations.html" class="nav-link" data-page="recommendations">Species Finder</a>
+        <a href="/calculator.html" class="nav-link" data-page="calculator">Sapling Calculator</a>
+        <a href="/insights.html" class="nav-link" data-page="insights">Insights</a>
+      </nav>
+      <div class="actions"></div>
+    </div>
+  </header>
+
+  <main class="container insights-container">
+    <section class="hero insights-hero">
+      <h1>Insights</h1>
+      <p>Understanding Your Farmland</p>
+    </section>
+
+    <section class="insights-search">
+      <label class="search-label" for="insightsSearch">Search articles</label>
+      <div class="search-row">
+        <input id="insightsSearch" class="search-input" type="search" placeholder="Search articles by keywords..." />
+        <button id="insightsSearchBtn" class="search-btn" type="button">
+          <span class="search-icon">🔍</span>
+          <span>Search</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="insights-list" aria-label="Articles">
+      <div id="insightsArticles" class="insights-grid"></div>
+      <div id="insightsEmpty" class="insights-empty" hidden>
+        No articles match your search. Try different keywords.
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col footer-brand">
+        <div class="logo footer-logo">
+  <img
+    src="/assets/images/Media (1).jpeg"
+    alt="Planting Optimisation Tool Logo"
+    class="logo-img"
+  />
+</div>
+
+        <div class="product">
+          <div class="product-title">Agroforestry Recommender</div>
+          <p class="product-desc">
+            Planting Optimisation Tool helps farmers and agronomists optimise farm
+            species, soil, and sapling recommendations for maximum yield and
+            sustainability.
+          </p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-heading">Explore</div>
+        <ul class="footer-links">
+          <li><a href="/index.html">Home</a></li>
+          <li><a href="/recommendations.html">Species Finder</a></li>
+          <li><a href="/calculator.html">Sapling Calculator</a></li>
+          <li><a href="/insights.html">Insights</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-heading">Legal</div>
+        <ul class="footer-links">
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Privacy</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-heading">Support</div>
+        <ul class="footer-links">
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copyright">© 2025 Chameleon. All rights reserved.</div>
+  </footer>
+
+  <script type="module" src="/src/insights.ts"></script>
+</body>
+
+</html>
