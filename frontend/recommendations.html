@@ -1,147 +1,184 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Species Recommendations</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Species Recommendations</title>
-</head>
-
-<body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="logo">
-  <img
-    src="/assets/images/Media (1).jpeg"
-    alt="Planting Optimisation Tool Logo"
-    class="logo-img"
-  />
-</div>
-      </div>
-      <nav class="nav">
-        <a href="/index.html" class="nav-link" data-page="home">Home</a>
-        <a href="/recommendations.html" class="nav-link" data-page="recommendations">Species Finder</a>
-        <a href="/calculator.html" class="nav-link" data-page="calculator">Sapling Calculator</a>
-        <a href="/insights.html" class="nav-link" data-page="insights">Insights</a>
-      </nav>
-      <div class="actions"></div>
-    </div>
-  </header>
-
-  <main class="container farm-page">
-    <h1 class="title">Farm Species Recommendation</h1>
-    <p class="subtitle">Provide your farm’s information to automatically load environmental data.</p>
-
-    <!-- FARM ID DROPDOWN -->
-    <div class="row row-1">
-      <div class="input-block">
-        <label>Farmer ID</label>
-        <select id="farmIdSelect" class="dropdown">
-          <option value="">Choose your ID</option>
-          <option value="new">➕ Add New Farm</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- NEW FARM MODE -->
-    <div id="newFarmSection" class="row row-1" style="display: none;">
-      <div class="input-block">
-        <label>Location Input [(lat,lon),(lat,lon)]</label>
-        <input id="polygonInput" type="text" placeholder="Enter polygon coordinates" />
-      </div>
-      <button id="polygonSearchBtn" class="search-btn">🔍</button>
-    </div>
-
-    <!-- Environment Fields -->
-    <div class="row row-2">
-      <div class="input-block"><label>Latitude</label><input id="latitudeInput" name="latitude" /></div>
-      <div class="input-block"><label>Longitude</label><input id="longitudeInput" name="longitude" /></div>
-      <div class="input-block"><label>pH</label><input id="phInput" name="ph" /></div>
-    </div>
-
-    <div class="row row-3">
-      <div class="input-block"><label>Soil Type</label><input id="soilTypeInput" name="soilType" /></div>
-      <div class="input-block"><label>Rainfall</label><input id="rainfallInput" name="rainfall" /></div>
-      <div class="input-block"><label>Temperature</label><input id="temperatureInput" name="temperature" /></div>
-      <div class="input-block"><label>Altitude</label><input id="altitudeInput" name="altitude" /></div>
-    </div>
-
-    <!-- BUTTONS -->
-    <div class="button-row">
-      <button id="saveProfileBtn" class="save-btn" style="display: none;">Save Profile</button>
-      <button id="generateBtn" class="generate-btn">Generate Report</button>
-    </div>
-
-    <!-- RESULTS -->
-    <div id="resultsSection" class="recommendation-section" style="display: none;">
-      <div class="header-recommendation">
-        <div class="species-names">
-          <p class="rec-subtitle">Top-Fit Species Recommendations for</p>
-          <h3 id="resultFarmId" class="rec-title">Farm ID: </h3>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="logo">
+            <img
+              src="/assets/images/Media (1).jpeg"
+              alt="Planting Optimisation Tool Logo"
+              class="logo-img"
+            />
+          </div>
         </div>
+        <nav class="nav">
+          <a href="/index.html" class="nav-link" data-page="home">Home</a>
+          <a
+            href="/recommendations.html"
+            class="nav-link"
+            data-page="recommendations"
+            >Species Finder</a
+          >
+          <a href="/calculator.html" class="nav-link" data-page="calculator"
+            >Sapling Calculator</a
+          >
+          <a href="/insights.html" class="nav-link" data-page="insights"
+            >Insights</a
+          >
+        </nav>
+        <div class="actions"></div>
+      </div>
+    </header>
 
-        <div class="download-right">
-          <p>Download full report for more species recommendation!</p>
-          <button id="downloadBtn" class="download-btn">Download Report</button>
+    <main class="container farm-page">
+      <h1 class="title">Farm Species Recommendation</h1>
+      <p class="subtitle">
+        Provide your farm’s information to automatically load environmental
+        data.
+      </p>
+
+      <!-- FARM ID DROPDOWN -->
+      <div class="row row-1">
+        <div class="input-block">
+          <label>Farmer ID</label>
+          <select id="farmIdSelect" class="dropdown">
+            <option value="">Choose your ID</option>
+            <option value="new">➕ Add New Farm</option>
+          </select>
         </div>
       </div>
 
-      <div id="speciesGrid" class="card-grid">
-        <!-- Species Cards will be injected here -->
+      <!-- NEW FARM MODE -->
+      <div id="newFarmSection" class="row row-1" style="display: none">
+        <div class="input-block">
+          <label>Location Input [(lat,lon),(lat,lon)]</label>
+          <input
+            id="polygonInput"
+            type="text"
+            placeholder="Enter polygon coordinates"
+          />
+        </div>
+        <button id="polygonSearchBtn" class="search-btn">🔍</button>
       </div>
-    </div>
-  </main>
 
-  <button class="chat-bubble" aria-label="chat">💬</button>
-
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-col footer-brand">
-        <div class="logo footer-logo">
-  <img
-    src="/assets/images/Media (1).jpeg"
-    alt="Planting Optimisation Tool Logo"
-    class="logo-img"
-  />
-</div>
-        <div class="product">
-          <div class="product-title">Agroforestry Recommender</div>
-          <p class="product-desc">
-            Planting Optimisation Tool helps farmers and agronomists optimise farm
-            species, soil, and sapling recommendations for maximum yield and
-            sustainability.
-          </p>
+      <!-- Environment Fields -->
+      <div class="row row-2">
+        <div class="input-block">
+          <label>Latitude</label><input id="latitudeInput" name="latitude" />
+        </div>
+        <div class="input-block">
+          <label>Longitude</label><input id="longitudeInput" name="longitude" />
+        </div>
+        <div class="input-block">
+          <label>pH</label><input id="phInput" name="ph" />
         </div>
       </div>
-      <div class="footer-col">
-        <div class="footer-heading">Explore</div>
-        <ul class="footer-links">
-          <li><a href="/index.html">Home</a></li>
-          <li><a href="/recommendations.html">Species Finder</a></li>
-          <li><a href="/index.html">Sapling Calculator</a></li>
-          <li><a href="/insights.html">Insights</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <div class="footer-heading">Legal</div>
-        <ul class="footer-links">
-          <li><a href="#">Terms</a></li>
-          <li><a href="#">Privacy</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <div class="footer-heading">Support</div>
-        <ul class="footer-links">
-          <li><a href="#">Contact Us</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="copyright">© 2025 Chameleon. All rights reserved.</div>
-  </footer>
 
-  <script type="module" src="/src/recommendations.ts"></script>
-</body>
+      <div class="row row-3">
+        <div class="input-block">
+          <label>Soil Type</label><input id="soilTypeInput" name="soilType" />
+        </div>
+        <div class="input-block">
+          <label>Rainfall</label><input id="rainfallInput" name="rainfall" />
+        </div>
+        <div class="input-block">
+          <label>Temperature</label
+          ><input id="temperatureInput" name="temperature" />
+        </div>
+        <div class="input-block">
+          <label>Altitude</label><input id="altitudeInput" name="altitude" />
+        </div>
+      </div>
 
+      <!-- BUTTONS -->
+      <div class="button-row">
+        <button id="saveProfileBtn" class="save-btn" style="display: none">
+          Save Profile
+        </button>
+        <button id="generateBtn" class="generate-btn">Generate Report</button>
+      </div>
+
+      <!-- RESULTS -->
+      <div
+        id="resultsSection"
+        class="recommendation-section"
+        style="display: none"
+      >
+        <div class="header-recommendation">
+          <div class="species-names">
+            <p class="rec-subtitle">Top-Fit Species Recommendations for</p>
+            <h3 id="resultFarmId" class="rec-title">Farm ID:</h3>
+          </div>
+
+          <div class="download-right">
+            <p>Download full report for more species recommendation!</p>
+            <button id="downloadBtn" class="download-btn">
+              Download Report
+            </button>
+          </div>
+        </div>
+
+        <div id="speciesGrid" class="card-grid">
+          <!-- Species Cards will be injected here -->
+        </div>
+      </div>
+    </main>
+
+    <button class="chat-bubble" aria-label="chat">💬</button>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-col footer-brand">
+          <div class="logo footer-logo">
+            <img
+              src="/assets/images/Media (1).jpeg"
+              alt="Planting Optimisation Tool Logo"
+              class="logo-img"
+            />
+          </div>
+          <div class="product">
+            <div class="product-title">Agroforestry Recommender</div>
+            <p class="product-desc">
+              Planting Optimisation Tool helps farmers and agronomists optimise
+              farm species, soil, and sapling recommendations for maximum yield
+              and sustainability.
+            </p>
+          </div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-heading">Explore</div>
+          <ul class="footer-links">
+            <li><a href="/index.html">Home</a></li>
+            <li><a href="/recommendations.html">Species Finder</a></li>
+            <li><a href="/index.html">Sapling Calculator</a></li>
+            <li><a href="/insights.html">Insights</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-heading">Legal</div>
+          <ul class="footer-links">
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Privacy</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-heading">Support</div>
+          <ul class="footer-links">
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">© 2025 Chameleon. All rights reserved.</div>
+    </footer>
+
+    <script type="module" src="/src/recommendations.ts"></script>
+  </body>
 </html>

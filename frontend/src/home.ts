@@ -10,7 +10,7 @@ function initNav() {
   else if (path.includes("insights.html")) page = "insights";
 
   const links = document.querySelectorAll(".nav .nav-link");
-  links.forEach((el) => {
+  links.forEach(el => {
     const link = el as HTMLAnchorElement;
     const pageId = link.dataset.page;
     if (pageId === page) {
@@ -29,7 +29,9 @@ function initStickyHeader() {
     if (window.scrollY > 4) header.classList.add("is-scrolled");
     else header.classList.remove("is-scrolled");
   };
-  window.addEventListener("scroll", toggle, { passive: true } as AddEventListenerOptions);
+  window.addEventListener("scroll", toggle, {
+    passive: true,
+  } as AddEventListenerOptions);
   toggle();
 }
 

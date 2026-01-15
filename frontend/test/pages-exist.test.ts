@@ -10,7 +10,7 @@ describe("HTML pages exist", () => {
     "insights.html",
   ];
 
-  pages.forEach((page) => {
+  pages.forEach(page => {
     it(`${page} exists`, () => {
       const filePath = path.resolve(__dirname, `../${page}`);
       expect(fs.existsSync(filePath)).toBe(true);

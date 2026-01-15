@@ -46,7 +46,7 @@ async function getAccessToken(): Promise<string | null> {
 }
 
 async function fetchRecommendationsFromApi(
-  farmId: string,
+  farmId: string
 ): Promise<SpeciesRec[] | null> {
   const token = await getAccessToken();
   if (!token) return null;
@@ -204,35 +204,29 @@ let formData: FarmData & { farmId: string } = {
 let speciesList: SpeciesRec[] = [];
 
 const farmIdSelect = document.getElementById(
-  "farmIdSelect",
+  "farmIdSelect"
 ) as HTMLSelectElement;
 const newFarmSection = document.getElementById(
-  "newFarmSection",
+  "newFarmSection"
 ) as HTMLDivElement;
 const polygonInput = document.getElementById(
-  "polygonInput",
+  "polygonInput"
 ) as HTMLInputElement;
 const polygonSearchBtn = document.getElementById(
-  "polygonSearchBtn",
+  "polygonSearchBtn"
 ) as HTMLButtonElement;
 const saveProfileBtn = document.getElementById(
-  "saveProfileBtn",
+  "saveProfileBtn"
 ) as HTMLButtonElement;
-const generateBtn = document.getElementById(
-  "generateBtn",
-) as HTMLButtonElement;
+const generateBtn = document.getElementById("generateBtn") as HTMLButtonElement;
 const resultsSection = document.getElementById(
-  "resultsSection",
+  "resultsSection"
 ) as HTMLDivElement;
 const resultFarmId = document.getElementById(
-  "resultFarmId",
+  "resultFarmId"
 ) as HTMLHeadingElement;
-const speciesGrid = document.getElementById(
-  "speciesGrid",
-) as HTMLDivElement;
-const downloadBtn = document.getElementById(
-  "downloadBtn",
-) as HTMLButtonElement;
+const speciesGrid = document.getElementById("speciesGrid") as HTMLDivElement;
+const downloadBtn = document.getElementById("downloadBtn") as HTMLButtonElement;
 
 const inputs = {
   latitude: document.getElementById("latitudeInput") as HTMLInputElement,

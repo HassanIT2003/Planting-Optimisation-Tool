@@ -14,14 +14,23 @@ async function fetchDirIndex(url: string): Promise<string[]> {
   const html = await res.text();
   const doc = new DOMParser().parseFromString(html, "text/html");
   const anchors = Array.from(doc.querySelectorAll("a"));
-  return anchors.map(a => (a.getAttribute("href") || "").trim()).filter(Boolean);
+  return anchors
+    .map(a => (a.getAttribute("href") || "").trim())
+    .filter(Boolean);
 }
 
 async function loadArticlesFromAssets() {
   const root = "/assets/";
   const entries = await fetchDirIndex(root);
-  const folderLinks = entries.filter(h => h.endsWith("/")).map(h => new URL(h, root).pathname);
-  const articles: Array<{ title: string; lead: string; image: string; path: string }> = [];
+  const folderLinks = entries
+    .filter(h => h.endsWith("/"))
+    .map(h => new URL(h, root).pathname);
+  const articles: Array<{
+    title: string;
+    lead: string;
+    image: string;
+    path: string;
+  }> = [];
   for (const folder of folderLinks) {
     const list = await fetchDirIndex(folder);
     const files = list
@@ -29,7 +38,9 @@ async function loadArticlesFromAssets() {
       .filter(p => /\.(png|jpg|jpeg|webp|gif|heic)$/i.test(p));
     if (!files.length) continue;
     const image = files[0];
-    const folderName = decodeURIComponent(folder.split("/").filter(Boolean).pop() || "Article");
+    const folderName = decodeURIComponent(
+      folder.split("/").filter(Boolean).pop() || "Article"
+    );
     const title = titleCase(folderName);
     const lead = `Learn about ${title} characteristics, suitability, and best practices for your farmland.`;
     articles.push({ title, lead, image, path: folder });
@@ -37,8 +48,12 @@ async function loadArticlesFromAssets() {
   return articles;
 }
 
-function renderArticles(list: Array<{ title: string; lead: string; image: string; path: string }>) {
-  const mount = document.getElementById("insightsArticles") as HTMLElement | null;
+function renderArticles(
+  list: Array<{ title: string; lead: string; image: string; path: string }>
+) {
+  const mount = document.getElementById(
+    "insightsArticles"
+  ) as HTMLElement | null;
   const empty = document.getElementById("insightsEmpty") as HTMLElement | null;
   if (!mount) return;
   mount.innerHTML = "";
@@ -64,20 +79,31 @@ function renderArticles(list: Array<{ title: string; lead: string; image: string
   }
 }
 
-function setupSearch(articles: Array<{ title: string; lead: string; image: string; path: string }>) {
-  const input = document.getElementById("insightsSearch") as HTMLInputElement | null;
-  const btn = document.getElementById("insightsSearchBtn") as HTMLButtonElement | null;
+function setupSearch(
+  articles: Array<{ title: string; lead: string; image: string; path: string }>
+) {
+  const input = document.getElementById(
+    "insightsSearch"
+  ) as HTMLInputElement | null;
+  const btn = document.getElementById(
+    "insightsSearchBtn"
+  ) as HTMLButtonElement | null;
   const doFilter = () => {
     const q = (input?.value || "").toLowerCase().trim();
     if (!q) {
       renderArticles(articles);
       return;
     }
-    const filtered = articles.filter(a => a.title.toLowerCase().includes(q) || a.lead.toLowerCase().includes(q));
+    const filtered = articles.filter(
+      a => a.title.toLowerCase().includes(q) || a.lead.toLowerCase().includes(q)
+    );
     renderArticles(filtered);
   };
   if (btn) btn.addEventListener("click", doFilter);
-  if (input) input.addEventListener("keydown", e => { if ((e as KeyboardEvent).key === "Enter") doFilter(); });
+  if (input)
+    input.addEventListener("keydown", e => {
+      if ((e as KeyboardEvent).key === "Enter") doFilter();
+    });
 }
 
 function setActiveNav() {

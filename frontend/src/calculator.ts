@@ -17,7 +17,9 @@ function initStickyHeader() {
     if (window.scrollY > 4) header.classList.add("is-scrolled");
     else header.classList.remove("is-scrolled");
   };
-  window.addEventListener("scroll", toggle, { passive: true } as AddEventListenerOptions);
+  window.addEventListener("scroll", toggle, {
+    passive: true,
+  } as AddEventListenerOptions);
   toggle();
 }
 

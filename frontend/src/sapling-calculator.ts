@@ -1,7 +1,11 @@
 export function initSaplingCalculator() {
-  const select = document.getElementById("farmerId") as HTMLSelectElement | null;
+  const select = document.getElementById(
+    "farmerId"
+  ) as HTMLSelectElement | null;
   const btn = document.getElementById("computeBtn") as HTMLButtonElement | null;
-  const fileInput = document.getElementById("saplingFile") as HTMLInputElement | null;
+  const fileInput = document.getElementById(
+    "saplingFile"
+  ) as HTMLInputElement | null;
   const maxBytes = 5 * 1024 * 1024;
   if (!btn) return;
   btn.addEventListener("click", () => {
