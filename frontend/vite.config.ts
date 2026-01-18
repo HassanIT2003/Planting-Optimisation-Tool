@@ -11,7 +11,7 @@ export default defineConfig({
         main: path.resolve(__dirname, "index.html"),
         calculator: path.resolve(__dirname, "calculator.html"),
         recommendations: path.resolve(__dirname, "recommendations.html"),
-        insights: path.resolve(__dirname, "insights.html"),
+        species: path.resolve(__dirname, "species.html"),
       },
     },
   },
