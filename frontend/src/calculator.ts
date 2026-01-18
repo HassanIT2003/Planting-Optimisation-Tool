@@ -56,7 +56,7 @@ function setActiveNavForPage() {
   let page = "calculator";
   if (path.includes("recommendations.html")) page = "recommendations";
   else if (path.includes("calculator.html")) page = "calculator";
-  else if (path.includes("insights.html")) page = "insights";
+  else if (path.includes("species.html")) page = "species";
   else if (path.includes("index.html") || path === "/") page = "home";
 
   const links = document.querySelectorAll(".nav .nav-link");
