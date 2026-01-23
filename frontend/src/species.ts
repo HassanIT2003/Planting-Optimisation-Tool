@@ -1,5 +1,35 @@
-import { client, Species } from "./utils/contentfulClient";
 import "./style.css";
+
+const API_BASE_URL = "http://127.0.0.1:8081";
+
+interface SoilTexture {
+  name: string;
+}
+
+interface AgroforestryType {
+  name: string;
+}
+
+interface Species {
+  id: number;
+  name: string; // Scientific name
+  common_name: string;
+  rainfall_mm_min: number;
+  rainfall_mm_max: number;
+  temperature_celsius_min: number;
+  temperature_celsius_max: number;
+  elevation_m_min: number;
+  elevation_m_max: number;
+  ph_min: number;
+  ph_max: number;
+  coastal: boolean;
+  riparian: boolean;
+  nitrogen_fixing: boolean;
+  shade_tolerant: boolean;
+  bank_stabilising: boolean;
+  soil_textures: SoilTexture[];
+  agroforestry_types: AgroforestryType[];
+}
 
 const searchInput = document.getElementById(
   "insightsSearch"
@@ -10,167 +40,175 @@ const searchBtn = document.getElementById(
 const grid = document.getElementById("insightsArticles") as HTMLElement;
 const emptyMsg = document.getElementById("insightsEmpty") as HTMLElement;
 
+// Modal elements
+const modal = document.getElementById("articleModal");
+const modalClose = modal?.querySelector(".modal-close");
+
+let allSpecies: Species[] = [];
+let isLoaded = false;
+
 function initThemeToggle() {
-  const root = document.documentElement;
-  const stored = window.localStorage.getItem("theme");
-  if (stored === "dark") root.classList.add("dark-theme");
-  const btn = document.getElementById("themeToggle");
-  if (!(btn instanceof HTMLButtonElement)) return;
-  const setLabel = () => {
-    const isDark = root.classList.contains("dark-theme");
-    btn.textContent = isDark ? "Light mode" : "Dark mode";
-  };
-  setLabel();
-  btn.addEventListener("click", () => {
-    const isDark = root.classList.toggle("dark-theme");
-    window.localStorage.setItem("theme", isDark ? "dark" : "light");
-    setLabel();
+  const toggleBtn = document.getElementById("themeToggle");
+  if (!toggleBtn) return;
+
+  // Check saved preference
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    if (currentTheme === "dark") {
+      document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("theme", "light");
+    } else {
+      document.documentElement.setAttribute("data-theme", "dark");
+      localStorage.setItem("theme", "dark");
+    }
   });
 }
 
-// --- 1. Fetch Data ---
-async function fetchSpecies(query: string = "") {
+// Close modal logic
+if (modal && modalClose) {
+  modalClose.addEventListener("click", () => {
+    modal.classList.remove("active");
+  });
+  // Click outside to close
+  modal.addEventListener("click", e => {
+    if (e.target === modal) {
+      modal.classList.remove("active");
+    }
+  });
+}
+
+async function fetchSpecies() {
   try {
-    const response = await client.getEntries({
-      content_type: "species",
-      query: query,
-      limit: 100,
-    });
-    return response.items as unknown as Species[];
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return [];
+    const res = await fetch(`${API_BASE_URL}/species`);
+    if (!res.ok) throw new Error("Failed to fetch species");
+    const data = await res.json();
+    allSpecies = data;
+    isLoaded = true;
+  } catch (err) {
+    console.error("Error fetching species:", err);
+    grid.innerHTML = "<p>Error loading species data. Please try again later.</p>";
   }
 }
 
-// --- 2. Render Grid (Cards) ---
-function renderGrid(items: Species[]) {
-  grid.innerHTML = "";
+async function handleSearch() {
+  const query = searchInput.value.trim().toLowerCase();
 
-  if (items.length === 0) {
-    emptyMsg.hidden = false;
-    emptyMsg.textContent = "No species found matching your criteria.";
+  // If not loaded, fetch first
+  if (!isLoaded) {
+    grid.innerHTML = "<p>Loading...</p>";
+    emptyMsg.hidden = true;
+    await fetchSpecies();
+  }
+
+  grid.innerHTML = "";
+  emptyMsg.hidden = true;
+
+  if (allSpecies.length === 0) {
+    grid.innerHTML = "<p>No species data available.</p>";
     return;
   }
 
-  emptyMsg.hidden = true;
+  const filtered = allSpecies.filter(s => {
+    if (!query) return true;
+    return (
+      s.name.toLowerCase().includes(query) ||
+      s.common_name.toLowerCase().includes(query) ||
+      s.agroforestry_types.some(t => t.name.toLowerCase().includes(query)) ||
+      s.soil_textures.some(t => t.name.toLowerCase().includes(query))
+    );
+  });
 
-  items.forEach(item => {
-    const { name, image } = item.fields;
+  if (filtered.length === 0) {
+    grid.innerHTML = "<p>No species found matching your criteria.</p>";
+    return;
+  }
 
-    const imageUrl = image?.fields?.file?.url
-      ? `https:${image.fields.file.url}`
-      : "https://placehold.co/600x400?text=No+Image";
+  filtered.forEach(species => {
+    const card = document.createElement("div");
+    card.className = "insight-card";
 
-    const card = document.createElement("article");
-    card.className = "article-card";
+    // Placeholder image since DB doesn't have images yet
+    const imgUrl = "assets/images/logo2.svg";
+
     card.innerHTML = `
-      <div class="article-media">
-        <img src="${imageUrl}" alt="${name}" />
-      </div>
-      <div class="article-body">
-        <h3 class="article-title">${name}</h3>
-        <div class="article-actions">
-          <button class="btn-outline view-details-btn">View Details</button>
-        </div>
+      <div class="card-img" style="background-image: url('${imgUrl}'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #f0fdf4;"></div>
+      <div class="card-body">
+          <h3>${species.common_name}</h3>
+          <p class="scientific">${species.name}</p>
+          <p class="excerpt">
+             Click to view ecological details...
+          </p>
       </div>
     `;
 
-    // Click event to open Modal
-    card
-      .querySelector(".view-details-btn")
-      ?.addEventListener("click", () => openModal(item));
+    card.addEventListener("click", () => {
+      openModal(species, imgUrl);
+    });
+
     grid.appendChild(card);
   });
 }
 
-// --- 3. Render Modal (Pop-up) ---
-function openModal(item: Species) {
-  let modal = document.getElementById("speciesModal");
-  if (!modal) {
-    createModalDOM();
-    modal = document.getElementById("speciesModal");
-  }
-
-  const { name, scientificName, description, image } = item.fields;
-  const imageUrl = image?.fields?.file?.url
-    ? `https:${image.fields.file.url}`
-    : "";
-
-  const renderRichText = (content: any) => {
-    if (!content?.content) return "<p>No details available.</p>";
-
-    return content.content
-      .map((node: any) => {
-        if (node.nodeType === "paragraph") {
-          const text = node.content.map((c: any) => c.value).join("");
-          return `<p>${text}</p>`;
-        }
-        if (node.nodeType === "heading-3") {
-          const text = node.content.map((c: any) => c.value).join("");
-          return `<h3>${text}</h3>`;
-        }
-        if (node.nodeType === "unordered-list") {
-          const items = node.content
-            .map((li: any) => `<li>${li.content[0].content[0].value}</li>`)
-            .join("");
-          return `<ul>${items}</ul>`;
-        }
-        return "";
-      })
-      .join("");
-  };
-
+function openModal(species: Species, imageUrl: string) {
   const modalContent = modal!.querySelector(
     ".modal-content-body"
   ) as HTMLElement;
 
-  modalContent.innerHTML = `
-    <div class="modal-header-img">
-        ${imageUrl ? `<img src="${imageUrl}" alt="${name}">` : ""}
+  const benefits = [];
+  if (species.nitrogen_fixing) benefits.push("Nitrogen Fixing");
+  if (species.shade_tolerant) benefits.push("Shade Tolerant");
+  if (species.bank_stabilising) benefits.push("Bank Stabilising");
+  if (species.coastal) benefits.push("Coastal Resilient");
+  if (species.riparian) benefits.push("Riparian");
+
+  const descriptionHtml = `
+    <div class="species-details">
+      <p><strong>Scientific Name:</strong> ${species.name}</p>
+      <p><strong>Common Name:</strong> ${species.common_name}</p>
+      
+      <div class="detail-section">
+        <h4>Ecological Requirements</h4>
+        <ul>
+          <li><strong>Rainfall:</strong> ${species.rainfall_mm_min} - ${species.rainfall_mm_max} mm</li>
+          <li><strong>Temperature:</strong> ${species.temperature_celsius_min} - ${species.temperature_celsius_max} °C</li>
+          <li><strong>Elevation:</strong> ${species.elevation_m_min} - ${species.elevation_m_max} m</li>
+          <li><strong>Soil pH:</strong> ${species.ph_min} - ${species.ph_max}</li>
+          <li><strong>Soil Textures:</strong> ${species.soil_textures.map(t => t.name).join(", ")}</li>
+        </ul>
+      </div>
+
+      <div class="detail-section">
+        <h4>Agroforestry Uses</h4>
+        <p>${species.agroforestry_types.map(t => t.name).join(", ")}</p>
+      </div>
+
+      ${benefits.length > 0 ? `
+      <div class="detail-section">
+        <h4>Key Benefits</h4>
+        <ul>
+          ${benefits.map(b => `<li>${b}</li>`).join("")}
+        </ul>
+      </div>
+      ` : ""}
     </div>
-    <h2>${name}</h2>
-    ${scientificName ? `<h4 class="scientific-name">${scientificName}</h4>` : ""}
+  `;
+
+  modalContent.innerHTML = `
+    <div class="modal-header-img" style="background-color: #f0fdf4; display: flex; justify-content: center; align-items: center;">
+        <img src="${imageUrl}" alt="${species.common_name}" style="max-height: 200px; width: auto;">
+    </div>
+    <h2>${species.common_name}</h2>
     <div class="modal-rich-text">
-        ${renderRichText(description)}
+        ${descriptionHtml}
     </div>
   `;
 
   modal!.classList.add("active");
-}
-
-function createModalDOM() {
-  const modal = document.createElement("div");
-  modal.id = "speciesModal";
-  modal.className = "side-modal";
-  modal.innerHTML = `
-    <div class="modal-overlay"></div>
-    <div class="modal-panel">
-      <button class="close-modal-btn">&times;</button>
-      <div class="modal-content-body"></div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-
-  const close = () => modal?.classList.remove("active");
-  modal.querySelector(".close-modal-btn")?.addEventListener("click", close);
-  modal.querySelector(".modal-overlay")?.addEventListener("click", close);
-}
-
-async function handleSearch() {
-  const query = searchInput.value.trim();
-  if (!query) {
-    grid.innerHTML = "";
-    emptyMsg.hidden = false;
-    emptyMsg.textContent = "Enter a keyword to search for species.";
-    return;
-  }
-
-  searchBtn.textContent = "...";
-  const results = await fetchSpecies(query);
-  renderGrid(results);
-  searchBtn.innerHTML =
-    '<span class="search-icon">🔍</span><span>Search</span>';
 }
 
 function init() {
@@ -181,7 +219,7 @@ function init() {
 
   emptyMsg.hidden = false;
   emptyMsg.textContent =
-    "Enter keywords like '2000mm' or 'boundary systems' to find species.";
+    "Enter keywords like '2000mm' or 'boundary' to find species.";
   initThemeToggle();
 }
 

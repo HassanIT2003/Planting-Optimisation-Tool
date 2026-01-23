@@ -1,40 +1,37 @@
 import "./style.css";
-
-function initThemeToggle() {
-  const root = document.documentElement;
-  const stored = window.localStorage.getItem("theme");
-  if (stored === "dark") root.classList.add("dark-theme");
-  const btn = document.getElementById("themeToggle");
-  if (!(btn instanceof HTMLButtonElement)) return;
-  const setLabel = () => {
-    const isDark = root.classList.contains("dark-theme");
-    btn.textContent = isDark ? "Light mode" : "Dark mode";
-  };
-  setLabel();
-  btn.addEventListener("click", () => {
-    const isDark = root.classList.toggle("dark-theme");
-    window.localStorage.setItem("theme", isDark ? "dark" : "light");
-    setLabel();
-  });
-}
+import "./recommendations.css";
 
 const API_BASE_URL = "http://127.0.0.1:8081";
 
-interface RecommendationApiItem {
-  species_id: number;
-  species_name: string;
-  species_common_name: string;
-  score_mcda: number;
-  rank_overall: number;
-  key_reasons: string[];
+// Auth Helper
+async function getAccessToken(): Promise<string | null> {
+  const username = "testuser@test.com";
+  const password = "password123";
+
+  const params = new URLSearchParams();
+  params.append("username", username);
+  params.append("password", password);
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params,
+    });
+    if (!res.ok) {
+      console.warn("Auth failed", res.status);
+      return null;
+    }
+    const data = await res.json();
+    return data.access_token;
+  } catch (err) {
+    console.error("Auth error:", err);
+    return null;
+  }
 }
 
-interface RecommendationsApiResponse {
-  farm_id: number;
-  recommendations: RecommendationApiItem[];
-}
-
-interface FarmCreateApiPayload {
+// Interfaces based on backend schemas
+interface FarmCreate {
   rainfall_mm: number;
   temperature_celsius: number;
   elevation_m: number;
@@ -43,507 +40,174 @@ interface FarmCreateApiPayload {
   area_ha: number;
   latitude: number;
   longitude: number;
+  slope: number;
   coastal: boolean;
   riparian: boolean;
   nitrogen_fixing: boolean;
   shade_tolerant: boolean;
   bank_stabilising: boolean;
-  slope: number;
-  agroforestry_type_ids: number[] | null;
-  external_id: number | null;
+  // agroforestry_type_ids?: number[]; // Optional
 }
 
-interface FarmReadApiResponse {
+interface FarmRead {
   id: number;
-  rainfall_mm: number;
-  temperature_celsius: number;
-  elevation_m: number;
-  ph: number;
-  soil_texture: {
-    name: string;
+  // other fields...
+}
+
+interface SpeciesRecommendation {
+  species_id: number;
+  species_name: string;
+  species_common_name: string;
+  score_mcda: number;
+  rank_overall: number;
+  key_reasons: string[];
+}
+
+interface RecommendationResponse {
+  farm_id: number;
+  recommendations: SpeciesRecommendation[];
+}
+
+// DOM Elements
+const form = document.getElementById("farmForm") as HTMLFormElement;
+const resultsSection = document.getElementById("resultsSection") as HTMLDivElement;
+const speciesList = document.getElementById("speciesList") as HTMLDivElement;
+const loadingSpinner = document.getElementById("loadingSpinner") as HTMLDivElement;
+
+// Helper to get form data
+function getFormData(): FarmCreate {
+  const formData = new FormData(form);
+
+  return {
+    rainfall_mm: Number(formData.get("rainfall_mm")),
+    temperature_celsius: Number(formData.get("temperature_celsius")),
+    elevation_m: Number(formData.get("elevation_m")),
+    ph: Number(formData.get("ph")),
+    soil_texture_id: Number(formData.get("soil_texture_id")),
+    area_ha: Number(formData.get("area_ha")),
+    latitude: Number(formData.get("latitude")),
+    longitude: Number(formData.get("longitude")),
+    slope: Number(formData.get("slope")),
+    coastal: formData.get("coastal") === "on",
+    riparian: formData.get("riparian") === "on",
+    nitrogen_fixing: formData.get("nitrogen_fixing") === "on",
+    shade_tolerant: formData.get("shade_tolerant") === "on",
+    bank_stabilising: formData.get("bank_stabilising") === "on",
   };
-  latitude: number;
-  longitude: number;
 }
 
-let accessToken: string | null = null;
+// Helper to create farm
+async function createFarm(data: FarmCreate, token: string): Promise<FarmRead> {
+  const response = await fetch(`${API_BASE_URL}/farms`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify(data),
+  });
 
-async function getAccessToken(): Promise<string | null> {
-  if (accessToken) return accessToken;
-  try {
-    const body = new URLSearchParams();
-    body.set("username", "testuser@test.com");
-    body.set("password", "devpassword");
-    body.set("grant_type", "password");
-
-    const res = await fetch(`${API_BASE_URL}/auth/token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: body.toString(),
-    });
-
-    if (!res.ok) return null;
-    const data = (await res.json()) as { access_token?: string };
-    if (!data.access_token) return null;
-    accessToken = data.access_token;
-    return accessToken;
-  } catch {
-    return null;
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to create farm: ${errorText}`);
   }
+
+  return response.json();
 }
 
-function normaliseNumber(value: string, fallback: number): number {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return fallback;
-  return n;
-}
-
-function mapSoilTextureToId(soilType: string): number {
-  const v = soilType.trim().toLowerCase();
-  if (!v) return 4;
-  if (v.includes("clay")) return 12;
-  if (v.includes("loam")) return 4;
-  if (v.includes("sand")) return 1;
-  return 4;
-}
-
-async function createFarmInBackend(fromForm: FarmData): Promise<number | null> {
-  const token = await getAccessToken();
-  if (!token) return null;
-
-  const rainfall = normaliseNumber(fromForm.rainfall, 1500);
-  const temperature = normaliseNumber(fromForm.temperature, 20);
-  const elevation = normaliseNumber(fromForm.altitude, 500);
-  const ph = normaliseNumber(fromForm.ph, 6);
-  const latitude = normaliseNumber(fromForm.latitude, 0);
-  const longitude = normaliseNumber(fromForm.longitude, 0);
-  const soilTextureId = mapSoilTextureToId(fromForm.soilType);
-
-  const payload: FarmCreateApiPayload = {
-    rainfall_mm: Math.round(rainfall),
-    temperature_celsius: Math.round(temperature),
-    elevation_m: Math.round(elevation),
-    ph,
-    soil_texture_id: soilTextureId,
-    area_ha: 1,
-    latitude,
-    longitude,
-    coastal: false,
-    riparian: false,
-    nitrogen_fixing: false,
-    shade_tolerant: false,
-    bank_stabilising: false,
-    slope: 0,
-    agroforestry_type_ids: [],
-    external_id: null,
-  };
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/farms`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) return null;
-    const data = (await res.json()) as FarmReadApiResponse;
-    if (!data || typeof data.id !== "number") return null;
-    return data.id;
-  } catch {
-    return null;
-  }
-}
-
-async function fetchUserFarms(): Promise<FarmReadApiResponse[] | null> {
-  const token = await getAccessToken();
-  if (!token) return null;
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/farms`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!res.ok) return null;
-    const data = (await res.json()) as FarmReadApiResponse[];
-    if (!Array.isArray(data)) return null;
-    return data;
-  } catch {
-    return null;
-  }
-}
-
-async function fetchFarmDetails(
-  farmId: string
-): Promise<FarmReadApiResponse | null> {
-  const token = await getAccessToken();
-  if (!token) return null;
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/farms/${farmId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!res.ok) return null;
-    const data = (await res.json()) as FarmReadApiResponse;
-    if (!data || typeof data.id !== "number") return null;
-    return data;
-  } catch {
-    return null;
-  }
-}
-
-async function fetchRecommendationsFromApi(
-  farmId: string
-): Promise<SpeciesRec[] | null> {
-  const token = await getAccessToken();
-  if (!token) return null;
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/recommendations/${farmId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!res.ok) return null;
-
-    const data = (await res.json()) as RecommendationsApiResponse;
-    if (!data || !Array.isArray(data.recommendations)) return null;
-
-    const species: SpeciesRec[] = data.recommendations.map(rec => {
-      const name = rec.species_common_name || rec.species_name;
-      return {
-        name,
-        matched: `Score: ${rec.score_mcda.toFixed(3)}`,
-        keyReasons: rec.key_reasons || [],
-        score: rec.score_mcda,
-      };
-    });
-
-    if (!species.length) return null;
-    const best = species.reduce((a, b) => (a.score > b.score ? a : b));
-    return species.map(sp => ({ ...sp, isBest: sp.name === best.name }));
-  } catch {
-    return null;
-  }
-}
-
-interface FarmData {
-  latitude: string;
-  longitude: string;
-  ph: string;
-  soilType: string;
-  rainfall: string;
-  temperature: string;
-  altitude: string;
-}
-
-interface SpeciesRec {
-  name: string;
-  matched: string;
-  keyReasons: string[];
-  score: number;
-  isBest?: boolean;
-}
-
-const farmDatabase: Record<string, FarmData> = {};
-
-let formData: FarmData & { farmId: string } = {
-  farmId: "",
-  latitude: "",
-  longitude: "",
-  ph: "",
-  soilType: "",
-  rainfall: "",
-  temperature: "",
-  altitude: "",
-};
-let speciesList: SpeciesRec[] = [];
-
-const farmIdSelect = document.getElementById(
-  "farmIdSelect"
-) as HTMLSelectElement;
-const newFarmSection = document.getElementById(
-  "newFarmSection"
-) as HTMLDivElement;
-const polygonInput = document.getElementById(
-  "polygonInput"
-) as HTMLInputElement;
-const polygonSearchBtn = document.getElementById(
-  "polygonSearchBtn"
-) as HTMLButtonElement;
-const saveProfileBtn = document.getElementById(
-  "saveProfileBtn"
-) as HTMLButtonElement;
-const generateBtn = document.getElementById("generateBtn") as HTMLButtonElement;
-const resultsSection = document.getElementById(
-  "resultsSection"
-) as HTMLDivElement;
-const resultFarmId = document.getElementById(
-  "resultFarmId"
-) as HTMLHeadingElement;
-const speciesGrid = document.getElementById("speciesGrid") as HTMLDivElement;
-
-const inputs = {
-  latitude: document.getElementById("latitudeInput") as HTMLInputElement,
-  longitude: document.getElementById("longitudeInput") as HTMLInputElement,
-  ph: document.getElementById("phInput") as HTMLInputElement,
-  soilType: document.getElementById("soilTypeInput") as HTMLInputElement,
-  rainfall: document.getElementById("rainfallInput") as HTMLInputElement,
-  temperature: document.getElementById("temperatureInput") as HTMLInputElement,
-  altitude: document.getElementById("altitudeInput") as HTMLInputElement,
-};
-
-function updateFormInputs() {
-  (Object.keys(inputs) as Array<keyof FarmData>).forEach(key => {
-    if (inputs[key]) {
-      inputs[key].value = formData[key] || "";
+// Helper to get recommendations
+async function getRecommendations(farmId: number, token: string): Promise<RecommendationResponse> {
+  const response = await fetch(`${API_BASE_URL}/recommendations/${farmId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
     }
   });
-}
 
-function mapFarmReadToFarmData(farm: FarmReadApiResponse): FarmData {
-  return {
-    latitude: String(farm.latitude),
-    longitude: String(farm.longitude),
-    ph: String(farm.ph),
-    soilType: farm.soil_texture?.name ?? "",
-    rainfall: String(farm.rainfall_mm),
-    temperature: String(farm.temperature_celsius),
-    altitude: String(farm.elevation_m),
-  };
-}
-
-async function handleFarmChange() {
-  const value = farmIdSelect.value;
-
-  if (value === "new") {
-    formData = {
-      farmId: "new",
-      latitude: "",
-      longitude: "",
-      ph: "",
-      soilType: "",
-      rainfall: "",
-      temperature: "",
-      altitude: "",
-    };
-    newFarmSection.style.display = "flex";
-    saveProfileBtn.style.display = "inline-block";
-  } else {
-    newFarmSection.style.display = "none";
-    saveProfileBtn.style.display = "none";
-    if (value) {
-      let stored = farmDatabase[value];
-      if (!stored) {
-        const apiFarm = await fetchFarmDetails(value);
-        if (apiFarm) {
-          stored = mapFarmReadToFarmData(apiFarm);
-          farmDatabase[value] = stored;
-        }
-      }
-      if (stored) {
-        formData = { farmId: value, ...stored };
-      } else {
-        formData = {
-          farmId: "",
-          latitude: "",
-          longitude: "",
-          ph: "",
-          soilType: "",
-          rainfall: "",
-          temperature: "",
-          altitude: "",
-        };
-      }
-    } else {
-      formData = {
-        farmId: "",
-        latitude: "",
-        longitude: "",
-        ph: "",
-        soilType: "",
-        rainfall: "",
-        temperature: "",
-        altitude: "",
-      };
-    }
+  if (!response.ok) {
+    throw new Error("Failed to fetch recommendations");
   }
-  updateFormInputs();
+
+  return response.json();
 }
 
-function handlePolygonSearch() {
-  if (!polygonInput.value.trim()) {
-    alert("Please enter polygon input");
+// Render Logic
+function renderRecommendations(recs: SpeciesRecommendation[]) {
+  speciesList.innerHTML = "";
+
+  if (recs.length === 0) {
+    speciesList.innerHTML = "<p>No suitable species found for this profile.</p>";
     return;
   }
 
-  const mockEnv = {
-    latitude: "-8.55",
-    longitude: "186.50",
-    ph: (5 + Math.random() * 2).toFixed(1),
-    soilType: ["Clay", "Loam", "Sandy"][Math.floor(Math.random() * 3)],
-    rainfall: (1500 + Math.random() * 1000).toFixed(0),
-    temperature: (18 + Math.random() * 6).toFixed(1),
-    altitude: (700 + Math.random() * 400).toFixed(0),
-  };
-
-  formData = { ...formData, ...mockEnv };
-  updateFormInputs();
-}
-
-async function handleSaveProfile() {
-  const currentForm: FarmData = {
-    latitude: inputs.latitude.value,
-    longitude: inputs.longitude.value,
-    ph: inputs.ph.value,
-    soilType: inputs.soilType.value,
-    rainfall: inputs.rainfall.value,
-    temperature: inputs.temperature.value,
-    altitude: inputs.altitude.value,
-  };
-
-  const backendFarmId = await createFarmInBackend(currentForm);
-  const newId =
-    backendFarmId !== null
-      ? backendFarmId.toString()
-      : (Object.keys(farmDatabase).length + 1).toString();
-
-  farmDatabase[newId] = currentForm;
-
-  const option = document.createElement("option");
-  option.value = newId;
-  option.text = `Farm ${newId}`;
-  farmIdSelect.insertBefore(option, farmIdSelect.lastElementChild);
-
-  farmIdSelect.value = newId;
-  handleFarmChange();
-
-  if (backendFarmId !== null) {
-    alert(`Farm ${newId} saved to server successfully.`);
-  } else {
-    alert(`Farm ${newId} saved locally (server unavailable).`);
-  }
-}
-
-async function handleGenerate() {
-  const id = farmIdSelect.value;
-  if (!id || id === "new") {
-    alert("Please select a saved Farm ID");
-    return;
-  }
-
-  const apiSpecies = await fetchRecommendationsFromApi(id);
-  if (apiSpecies && apiSpecies.length) {
-    speciesList = apiSpecies;
-  } else {
-    speciesList = [
-      {
-        name: "Sandalwood",
-        matched: "70% (estimated)",
-        keyReasons: ["auto-analysis"],
-        score: 70,
-      },
-      {
-        name: "Mahogany",
-        matched: "65% (estimated)",
-        keyReasons: ["auto-analysis"],
-        score: 65,
-      },
-      {
-        name: "Bamboo",
-        matched: "60% (estimated)",
-        keyReasons: ["auto-analysis"],
-        score: 60,
-      },
-    ];
-    const best = speciesList.reduce((a, b) => (a.score > b.score ? a : b));
-    speciesList = speciesList.map(sp => ({
-      ...sp,
-      isBest: sp.name === best.name,
-    }));
-  }
-  renderResults();
-}
-
-function renderResults() {
-  resultFarmId.textContent = `Farm ID: ${farmIdSelect.value}`;
-  resultsSection.style.display = "block";
-  speciesGrid.innerHTML = "";
-
-  speciesList.forEach(item => {
+  recs.forEach((rec) => {
     const card = document.createElement("div");
-    card.className = `species-card ${item.isBest ? "best" : ""}`;
+    card.className = "species-card";
 
-    const reasonsHtml = item.keyReasons.map(r => `<li>${r}</li>`).join("");
+    // Format score as percentage
+    const scorePct = Math.round(rec.score_mcda * 100);
 
     card.innerHTML = `
-            <div class="image-placeholder">
-                <span>Image</span>
-            </div>
-            <div class="species-name">${item.name}</div>
-            <div class="match-score">Match: ${item.matched}</div>
-            <ul class="reasons-list">
-                ${reasonsHtml}
-            </ul>
-        `;
-    speciesGrid.appendChild(card);
+      <div class="species-header">
+        <h3>${rec.species_common_name}</h3>
+        <span class="score-badge">${scorePct}% Match</span>
+      </div>
+      <p class="scientific-name"><em>${rec.species_name}</em></p>
+      
+      <div class="reasons">
+        <h4>Key Reasons:</h4>
+        <ul>
+          ${rec.key_reasons.map(r => `<li>${r}</li>`).join("")}
+        </ul>
+      </div>
+    `;
+    speciesList.appendChild(card);
   });
 }
 
-function initNav() {
-  const links = document.querySelectorAll(".nav-link");
-  const path = window.location.pathname;
-  const currentPage = path.includes("insights")
-    ? "insights"
-    : path.includes("recommendations")
-      ? "recommendations"
-      : "calculator";
+// Event Listener
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  links.forEach(link => {
-    link.classList.remove("active");
-    const page = link.getAttribute("data-page");
-    if (page === currentPage) link.classList.add("active");
-  });
-}
+  try {
+    // UI State: Loading
+    const submitBtn = form.querySelector("button[type='submit']") as HTMLButtonElement;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Processing...";
 
-document.addEventListener("DOMContentLoaded", () => {
-  initNav();
-  initThemeToggle();
+    resultsSection.hidden = false;
+    loadingSpinner.hidden = false;
+    speciesList.innerHTML = "";
 
-  if (farmIdSelect) {
-    farmIdSelect.addEventListener("change", () => {
-      handleFarmChange();
-    });
-    fetchUserFarms().then(farms => {
-      if (!farms) return;
-      farms.forEach(farm => {
-        const id = farm.id.toString();
-        const option = document.createElement("option");
-        option.value = id;
-        option.text = `Farm ${id}`;
-        farmIdSelect.insertBefore(option, farmIdSelect.lastElementChild);
-      });
-    });
+    // 0. Authenticate
+    const token = await getAccessToken();
+    if (!token) {
+      throw new Error("Authentication failed. Please check backend credentials.");
+    }
+
+    // 1. Create Farm
+    const farmData = getFormData();
+    console.log("Creating farm with data:", farmData);
+    const farm = await createFarm(farmData, token);
+    console.log("Farm created:", farm);
+
+    // 2. Get Recommendations
+    const recData = await getRecommendations(farm.id, token);
+    console.log("Recommendations received:", recData);
+
+    // 3. Render
+    renderRecommendations(recData.recommendations);
+
+  } catch (error) {
+    console.error(error);
+    alert(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
+    resultsSection.hidden = true;
+  } finally {
+    // UI State: Reset
+    const submitBtn = form.querySelector("button[type='submit']") as HTMLButtonElement;
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Generate Recommendations";
+    loadingSpinner.hidden = true;
   }
-
-  if (polygonSearchBtn)
-    polygonSearchBtn.addEventListener("click", handlePolygonSearch);
-  if (saveProfileBtn)
-    saveProfileBtn.addEventListener("click", handleSaveProfile);
-  if (generateBtn)
-    generateBtn.addEventListener("click", () => {
-      handleGenerate();
-    });
-  Object.keys(inputs).forEach(key => {
-    const k = key as keyof FarmData;
-    inputs[k].addEventListener("input", e => {
-      formData[k] = (e.target as HTMLInputElement).value;
-    });
-  });
 });

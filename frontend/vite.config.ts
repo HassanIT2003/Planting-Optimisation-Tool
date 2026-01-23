@@ -17,6 +17,7 @@ export default defineConfig({
   },
   test: {
     watch: false,
+    environment: 'jsdom',
   },
   resolve: {
     alias: {

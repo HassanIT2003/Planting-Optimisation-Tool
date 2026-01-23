@@ -2,31 +2,31 @@ import "./style.css";
 
 export { sum } from "./sum";
 
-import { initSaplingCalculator } from "./sapling-calculator";
+// import { initSaplingCalculator } from "./sapling-calculator";
 
 function initThemeToggle() {
-  const root = document.documentElement;
-  const stored = window.localStorage.getItem("theme");
-  if (stored === "dark") root.classList.add("dark-theme");
-  const btn = document.getElementById("themeToggle");
-  if (!(btn instanceof HTMLButtonElement)) return;
-  const setLabel = () => {
-    const isDark = root.classList.contains("dark-theme");
-    btn.textContent = isDark ? "Light mode" : "Dark mode";
-  };
-  setLabel();
-  btn.addEventListener("click", () => {
-    const isDark = root.classList.toggle("dark-theme");
-    window.localStorage.setItem("theme", isDark ? "dark" : "light");
-    setLabel();
+  const toggleBtn = document.getElementById("themeToggle");
+  if (!toggleBtn) return;
+
+  // Check saved preference
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    if (currentTheme === "dark") {
+      document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("theme", "light");
+    } else {
+      document.documentElement.setAttribute("data-theme", "dark");
+      localStorage.setItem("theme", "dark");
+    }
   });
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initSaplingCalculator);
-} else {
-  initSaplingCalculator();
-}
+
 
 function initStickyHeader() {
   const header = document.querySelector(".topbar") as HTMLElement | null;
@@ -56,7 +56,7 @@ function setActiveNavForPage() {
   let page = "calculator";
   if (path.includes("recommendations.html")) page = "recommendations";
   else if (path.includes("calculator.html")) page = "calculator";
-  else if (path.includes("species.html")) page = "species";
+  else if (path.includes("insights.html")) page = "insights";
   else if (path.includes("index.html") || path === "/") page = "home";
 
   const links = document.querySelectorAll(".nav .nav-link");

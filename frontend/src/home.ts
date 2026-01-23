@@ -1,30 +1,14 @@
 import "./style.css";
 import "./home.css";
 
-function initThemeToggle() {
-  const root = document.documentElement;
-  const stored = window.localStorage.getItem("theme");
-  if (stored === "dark") root.classList.add("dark-theme");
-  const btn = document.getElementById("themeToggle");
-  if (!(btn instanceof HTMLButtonElement)) return;
-  const setLabel = () => {
-    const isDark = root.classList.contains("dark-theme");
-    btn.textContent = isDark ? "Light mode" : "Dark mode";
-  };
-  setLabel();
-  btn.addEventListener("click", () => {
-    const isDark = root.classList.toggle("dark-theme");
-    window.localStorage.setItem("theme", isDark ? "dark" : "light");
-    setLabel();
-  });
-}
-
-function initNav() {
+// Nav Logic
+export function initNav() {
   const path = window.location.pathname;
   let page = "home";
-  if (path.includes("recommendations.html")) page = "recommendations";
+  if (path.includes("profile.html")) page = "profile";
   else if (path.includes("calculator.html")) page = "calculator";
-  else if (path.includes("insights.html")) page = "insights";
+  else if (path.includes("species.html")) page = "species";
+  else if (path.includes("recommendations.html")) page = "recommendations";
 
   const links = document.querySelectorAll(".nav .nav-link");
   links.forEach(el => {
@@ -38,7 +22,8 @@ function initNav() {
   });
 }
 
-function initStickyHeader() {
+// Sticky Header Logic
+export function initStickyHeader() {
   const header = document.querySelector(".topbar") as HTMLElement | null;
   if (!header) return;
   const toggle = () => {
@@ -51,8 +36,10 @@ function initStickyHeader() {
   toggle();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  initNav();
-  initStickyHeader();
-  initThemeToggle();
-});
+// Initialisation
+if (typeof document !== "undefined") {
+  document.addEventListener("DOMContentLoaded", () => {
+    initNav();
+    initStickyHeader();
+  });
+}

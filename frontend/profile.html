@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sapling Estimation</title>
+  <title>Environmental Profile | Planting Optimisation Tool</title>
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 
@@ -17,8 +17,8 @@
       </div>
       <nav class="nav">
         <a href="/index.html" class="nav-link" data-page="home">Home</a>
-        <a href="/profile.html" class="nav-link" data-page="profile">Environmental Profile</a>
-        <a href="/calculator.html" class="nav-link active" data-page="calculator">Sapling Estimation</a>
+        <a href="/profile.html" class="nav-link active" data-page="profile">Environmental Profile</a>
+        <a href="/calculator.html" class="nav-link" data-page="calculator">Sapling Estimation</a>
         <a href="/recommendations.html" class="nav-link" data-page="recommendations">Agroforestry Recommendation</a>
         <a href="/species.html" class="nav-link" data-page="species">Species</a>
       </nav>
@@ -28,21 +28,12 @@
 
   <main class="container">
     <section class="hero">
-      <h1>Bulk Sapling Calculator</h1>
-      <p>Calculation of allocation of number of saplings to a farm.</p>
+      <h1>Environmental Profile</h1>
+      <p>Manage your farm's environmental data.</p>
     </section>
-
-    <section class="form-section">
-      <div class="card">
-        <div class="form-group">
-          <label for="farmerId">Farm ID</label>
-          <input type="text" id="farmerId" class="input" placeholder="Enter Farm ID" />
-        </div>
-        <button id="computeBtn" class="btn-primary">
-          Compute Sapling Needs
-        </button>
-      </div>
-    </section>
+    <div class="card">
+      <p style="text-align: center; color: var(--muted);">Profile functionality is coming soon.</p>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -73,7 +64,7 @@
     </div>
   </footer>
 
-  <script type="module" src="/src/calculator.ts"></script>
+  <script type="module" src="/src/profile.ts"></script>
 </body>
 
 </html>

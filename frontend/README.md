@@ -3,10 +3,54 @@
 This folder contains the frontend for the Planting Optimisation Tool.  
 It is a multi-page Vite + TypeScript application that provides:
 
-- A marketing-style home page
-- A **Recommendation page**
-- A **Sapling Calculator**
+- A user-friendly home page
+- A **Agroforestory species recommendation**
+- A **Sapling Estimation**
+- A **Environmental profile generation**
 - An **Species** section for species information
+
+---
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed on your machine:
+
+- **[Node.js](https://nodejs.org/)** (version 18 or higher recommended) - This includes **npm** (Node Package Manager).
+- **[Git](https://git-scm.com/)** - For version control and cloning the repository.
+
+---
+
+## Installation & Setup
+
+### 1. Clone the Repository
+
+You can clone the repository directly or fork it first if you plan to contribute.
+
+**Option A: Clone directly**
+```bash
+git clone https://github.com/your-username/Planting-Optimisation-Tool.git
+```
+
+**Option B: Fork and Clone**
+1. Click the **Fork** button at the top right of the repository page.
+2. Clone your forked repository:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/Planting-Optimisation-Tool.git
+   ```
+
+### 2. Navigate to the Frontend Directory
+
+```bash
+cd Planting-Optimisation-Tool/frontend
+```
+
+### 3. Install Dependencies
+
+Install all required Node.js packages listed in `package.json`:
+
+```bash
+npm install
+```
 
 ---
 
@@ -27,8 +71,9 @@ It is a multi-page Vite + TypeScript application that provides:
 Key files:
 
 - `index.html` – Home page (hero, features, testimonials)
-- `recommendations.html` – Species Finder page
-- `calculator.html` – Sapling Calculator page
+- `recommendations.html` – Agroforestry species recommendation
+- `profile.html` – Environmental profile generation
+- `calculator.html` – Sapling estimation page
 - `species.html` – Species page
 
 Main TypeScript entry points:
@@ -70,6 +115,39 @@ Vite prints the exact dev URL in the terminal (by default `http://localhost:5173
 
 ---
 
+## Troubleshooting
+
+### Port in Use / Blocked
+
+If you encounter an error indicating that the port `5173` is already in use or blocked by a firewall/security policy, you can specify a different port or check your network settings.
+
+**1. Specify a Custom Port**
+
+You can run the dev server on a different port (e.g., `3000`) by passing the `--port` flag:
+
+```bash
+npm run dev -- --port 3000
+```
+
+Alternatively, you can modify the `package.json` file:
+
+```json
+"scripts": {
+  "dev": "vite --port 3000",
+  ...
+}
+```
+
+**2. Firewall & Security Settings**
+
+- **Windows Firewall**: Ensure that `node.exe` is allowed to communicate through the firewall on Private (and Public, if needed) networks.
+- **Corporate/University Networks**: Some environments block non-standard ports. Try using port `80` or `8080` if `5173` is blocked, though this may require administrator privileges.
+- **Check Port Availability**:
+  - **Windows**: `netstat -ano | findstr :5173`
+  - **Mac/Linux**: `lsof -i :5173`
+
+---
+
 ## Backend Integration (Species Finder)
 
 The Species Finder page (`recommendations.html` / `src/recommendations.ts`) can talk to the backend API for real recommendations.
@@ -86,15 +164,11 @@ The Species Finder page (`recommendations.html` / `src/recommendations.ts`) can 
   - `GET /farms/{farm_id}` to fetch farm details when a farm is selected
   - `GET /recommendations/{farm_id}` to fetch species recommendations
 
-If the backend is not running or the request fails, the UI falls back to a small hard-coded list of species so the page still shows example output.
+If the backend is not running or the request fails, the UI will display an error message.
 
-You can run the backend (from the `backend` folder) with:
+You can run the backend (from the `backend` folder) 
 
-```bash
-python -m fastapi dev src/main.py --port 8081 --host 127.0.0.1
-```
-
-The frontend does **not** require the backend to run, but real recommendations on the Species Finder page are only available when the backend is up.
+The frontend does **not** require the backend to run, but real recommendations on the Species Finder page are only available when the backend returns data.
 
 ---
 
@@ -111,61 +185,4 @@ From the `frontend` directory:
 
 ---
 
-## Recent UI Changes
 
-- Species Finder is now user-centric:
-  - Farm dropdown loads farms from the backend for the logged-in user.
-  - Farm details in the form are populated from the selected backend farm.
-- The “Download Report” button on the Species Finder page no longer uses mock data; it is present but not yet wired to a backend export.
-- The top navigation bar on all pages now includes a “Species” link placeholder for future species-related views.
-
-### Additional recent changes
-
-- Species Finder form layout:
-  - The farm profile form on `recommendations.html` has been restructured and centered for a clearer, more balanced layout.
-  - Related layout styles live in `src/style.css` under the farm form and grid row sections.
-- Footer branding:
-  - All pages (home, recommendations, calculator, species) now use **“Species Finder”** as the footer product title.
-- Dark mode toggle:
-  - A global **Dark mode** toggle button has been added to the header on all pages.
-  - Theme state is stored in `localStorage` and applied on load so the user’s choice persists across pages and refreshes.
-  - Theme variables (light/dark) are defined in `src/style.css`, and the toggle logic is implemented in:
-    - `src/home.ts`
-    - `src/recommendations.ts`
-    - `src/calculator.ts`
-    - `src/species.ts`
-- Logo integration:
-  - New SVG logo asset added at `public/assets/images/logo-main.svg`.
-  - Header and footer use this logo inside a circular `.logo-circle` container sized to 44×44px.
-  - `.logo-circle` styling in `src/style.css` ensures the logo fills the circle with no residual whitespace (using `overflow: hidden` and `object-fit: cover`).
-- Home page feature cards:
-  - The three “Explore Now” feature cards on `index.html` now use `logo-main.svg` as their hover background image.
-  - The image is wired via the `hoverBgImage` `<img>` elements inside each `.featureCard`.
-- Header logo navigation:
-  - The logo in the header on all pages is now wrapped in an anchor linking to `/index.html`.
-  - Clicking the logo from any page returns the user to the home page.
-- Linting and CI alignment:
-  - `eslint.config.ts` was updated to keep Prettier enforcement while disabling the strict `@typescript-eslint/no-explicit-any` rule to accommodate existing Contentful-related code.
-  - `.stylelintrc` was updated to relax some stylistic rules (such as strict selector naming and property ordering) while keeping core Stylelint + Prettier integration.
-  - Frontend commands used by `.github/workflows/frontend-ci.yml` now pass locally:
-    - `npm run lint:scripts`
-    - `npm run lint:styles`
-    - `npm run format:scripts -- --check`
-    - `npm run format:styles`
-
----
-
-## Contentful Management for Species Information Page (CMS)
-
-- Contentful (Headless CMS)
-- Manages dynamic species data including images, rich text descriptions, and keywords.
-- _Note: Species data can be managed via the [Contentful Dashboard](https://app.contentful.com). You can optionally bulk-seed data `species.csv` using `npx ts-node seedContentful.ts`._
-
-## Local Configuration
-
-To run the frontend locally, you must create a `.env` file in the root directory with the following Contentful keys:
-
-```ini
-VITE_SPACE_ID=your_space_id_here
-VITE_ACCESS_TOKEN=your_access_token_here
-```
