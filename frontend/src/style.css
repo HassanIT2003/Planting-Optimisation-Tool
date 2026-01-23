@@ -25,10 +25,19 @@
   --surface: #f4f7f5;
   --border: #e3e7e5;
   --gradient: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #0e7a43 100%);
+<<<<<<< HEAD
   --gradient-dark: linear-gradient(135deg,
       #16a34a 0%,
       #0e7a43 60%,
       #065f46 100%);
+=======
+  --gradient-dark: linear-gradient(
+    135deg,
+    #16a34a 0%,
+    #0e7a43 60%,
+    #065f46 100%
+  );
+>>>>>>> upstream/master
 }
 
 * {
@@ -100,6 +109,7 @@ html {
   padding: 14px 20px;
 }
 
+<<<<<<< HEAD
 .card {
   background: #fff;
   border: 1px solid var(--border);
@@ -108,6 +118,8 @@ html {
   padding: 24px;
 }
 
+=======
+>>>>>>> upstream/master
 .brand {
   align-items: center;
   display: flex;
@@ -181,6 +193,7 @@ html {
 .container,
 main.container {
   flex: 1 0 auto;
+<<<<<<< HEAD
   margin: 0 auto;
   max-width: 1200px;
   padding: 40px 20px 80px;
@@ -193,6 +206,11 @@ main.container {
   main.container {
     padding: 64px 40px 120px;
   }
+=======
+  margin: 0 100px;
+  max-width: 1200px;
+  padding: 64px 20px 120px;
+>>>>>>> upstream/master
 }
 
 .hero {
@@ -405,6 +423,7 @@ main.container {
   position: relative;
 }
 
+<<<<<<< HEAD
 .input {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -415,6 +434,8 @@ main.container {
   width: 100%;
 }
 
+=======
+>>>>>>> upstream/master
 .select {
   appearance: none;
   background: var(--surface);
@@ -450,7 +471,21 @@ main.container {
   background: var(--gradient-dark);
 }
 
+<<<<<<< HEAD
 
+=======
+.chat-bubble {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  bottom: 28px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  height: 44px;
+  position: fixed;
+  right: 28px;
+  width: 44px;
+}
+>>>>>>> upstream/master
 
 .panel {
   background: #fff;
@@ -475,12 +510,25 @@ main.container {
 
 .site-footer::before {
   background:
+<<<<<<< HEAD
     radial-gradient(1200px 400px at 10% -10%,
       rgba(255, 255, 255, 0.08),
       transparent 50%),
     radial-gradient(1000px 300px at 80% -20%,
       rgba(255, 255, 255, 0.06),
       transparent 50%);
+=======
+    radial-gradient(
+      1200px 400px at 10% -10%,
+      rgba(255, 255, 255, 0.08),
+      transparent 50%
+    ),
+    radial-gradient(
+      1000px 300px at 80% -20%,
+      rgba(255, 255, 255, 0.06),
+      transparent 50%
+    );
+>>>>>>> upstream/master
   content: "";
   inset: 0;
   pointer-events: none;
@@ -561,4 +609,8 @@ main.container {
   margin: 0 auto;
   max-width: 1100px;
   padding: 16px 20px 28px;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> upstream/master
