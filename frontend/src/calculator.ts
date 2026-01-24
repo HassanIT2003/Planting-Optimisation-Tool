@@ -1,5 +1,5 @@
 import "./style.css";
-<<<<<<< HEAD
+
 
 export { sum } from "./sum";
 
@@ -72,5 +72,4 @@ if (document.readyState === "loading") {
 } else {
   setActiveNavForPage();
 }
-=======
->>>>>>> upstream/master
+

@@ -8,10 +8,7 @@ export function initNav() {
   if (path.includes("profile.html")) page = "profile";
   else if (path.includes("calculator.html")) page = "calculator";
   else if (path.includes("species.html")) page = "species";
-<<<<<<< HEAD
   else if (path.includes("recommendations.html")) page = "recommendations";
-=======
->>>>>>> upstream/master
 
   const links = document.querySelectorAll(".nav .nav-link");
   links.forEach(el => {
