@@ -3,7 +3,6 @@
 This folder contains the frontend for the Planting Optimisation Tool.  
 It is a multi-page Vite + TypeScript application that provides:
 
-<<<<<<< HEAD
 - A user-friendly home page
 - A **Agroforestory species recommendation**
 - A **Sapling Estimation**
@@ -20,7 +19,7 @@ Before you begin, ensure you have the following installed on your machine:
 - **[Git](https://git-scm.com/)** - For version control and cloning the repository.
 
 ---
-=======
+
 - A **Home** page (Landing page)
 - A **Environmental Profile** page
 - A **Sapling Calculator** page
@@ -66,7 +65,8 @@ Vite is configured in `vite.config.ts` to treat these HTML files as separate ent
 ## How to Run the Frontend
 
 From the project root:
->>>>>>> upstream/master
+
+> > > > > > > upstream/master
 
 ## Installation & Setup
 
@@ -75,12 +75,14 @@ From the project root:
 You can clone the repository directly or fork it first if you plan to contribute.
 
 **Option A: Clone directly**
+
 ```bash
-<<<<<<< HEAD
+
 git clone https://github.com/your-username/Planting-Optimisation-Tool.git
 ```
 
 **Option B: Fork and Clone**
+
 1. Click the **Fork** button at the top right of the repository page.
 2. Clone your forked repository:
    ```bash
@@ -215,7 +217,7 @@ The Species Finder page (`recommendations.html` / `src/recommendations.ts`) can 
 
 If the backend is not running or the request fails, the UI will display an error message.
 
-You can run the backend (from the `backend` folder) 
+You can run the backend (from the `backend` folder)
 
 The frontend does **not** require the backend to run, but real recommendations on the Species Finder page are only available when the backend returns data.
 
@@ -234,12 +236,11 @@ From the `frontend` directory:
 
 ---
 
-
-=======
 cd Planting-Optimisation-Tool/frontend
 npm install
 npm run dev
-```
+
+````
 
 ## 1. Fork and Clone the repository
 
@@ -251,7 +252,7 @@ Then clone your fork locally
 ```bash
 git clone https://github.com/<your-username>/Planting-Optimisation-Tool.git  # Replace <your-username> with your github username.
 cd Planting-Optimisation-Tool
-```
+````
 
 Add the project repo as remote to keep your fork up to date
 
@@ -409,4 +410,3 @@ From the `frontend` directory:
 - `npm run lint:scripts` – lint TypeScript files with ESLint
 - `npm run lint:styles` – lint CSS/SCSS with Stylelint
 - `npm run format` – format scripts and styles with Prettier + Stylelint
->>>>>>> upstream/master

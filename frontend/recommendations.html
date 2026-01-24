@@ -1,157 +1,229 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agroforestry Recommendations | Planting Optimisation Tool</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agroforestry Recommendations | Planting Optimisation Tool</title>
-</head>
-
-<body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <img src="/assets/images/logo2.svg" alt="Logo" class="aboutLogo" />
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <img src="/assets/images/logo2.svg" alt="Logo" class="aboutLogo" />
+        </div>
+        <nav class="nav">
+          <a href="/index.html" class="nav-link" data-page="home">Home</a>
+          <a href="/profile.html" class="nav-link" data-page="profile"
+            >Environmental Profile</a
+          >
+          <a
+            href="/recommendations.html"
+            class="nav-link active"
+            data-page="recommendations"
+            >Species Finder</a
+          >
+          <a href="/calculator.html" class="nav-link" data-page="calculator"
+            >Sapling Estimation</a
+          >
+          <a href="/species.html" class="nav-link" data-page="species"
+            >Species</a
+          >
+        </nav>
+        <div class="actions"></div>
       </div>
-      <nav class="nav">
-        <a href="/index.html" class="nav-link" data-page="home">Home</a>
-        <a href="/profile.html" class="nav-link" data-page="profile">Environmental Profile</a>
-        <a href="/recommendations.html" class="nav-link active" data-page="recommendations">Species Finder</a>
-        <a href="/calculator.html" class="nav-link" data-page="calculator">Sapling Estimation</a>
-        <a href="/species.html" class="nav-link" data-page="species">Species</a>
-      </nav>
-      <div class="actions"></div>
-    </div>
-  </header>
+    </header>
 
-  <main class="main-container">
-    <div class="content-wrapper">
-      <!-- Form Section -->
-      <div class="card form-card">
-        <div class="card-header">
-          <h2>Agroforestry Recommendations</h2>
-          <p>
-            Enter your farm's environmental details to get tailored species
-            recommendations.
-          </p>
+    <main class="main-container">
+      <div class="content-wrapper">
+        <!-- Form Section -->
+        <div class="card form-card">
+          <div class="card-header">
+            <h2>Agroforestry Recommendations</h2>
+            <p>
+              Enter your farm's environmental details to get tailored species
+              recommendations.
+            </p>
+          </div>
+
+          <form id="farmForm" class="farm-form">
+            <div class="form-grid">
+              <!-- Physical Properties -->
+              <div class="form-group">
+                <label for="rainfall">Annual Rainfall (mm)</label>
+                <input
+                  type="number"
+                  id="rainfall"
+                  name="rainfall_mm"
+                  min="1000"
+                  max="3000"
+                  required
+                  placeholder="1000 - 3000"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="temperature">Avg Temperature (°C)</label>
+                <input
+                  type="number"
+                  id="temperature"
+                  name="temperature_celsius"
+                  min="15"
+                  max="30"
+                  required
+                  placeholder="15 - 30"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="elevation">Elevation (m)</label>
+                <input
+                  type="number"
+                  id="elevation"
+                  name="elevation_m"
+                  min="0"
+                  max="2963"
+                  required
+                  placeholder="0 - 2963"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="ph">Soil pH</label>
+                <input
+                  type="number"
+                  id="ph"
+                  name="ph"
+                  min="4.0"
+                  max="8.5"
+                  step="0.1"
+                  required
+                  placeholder="4.0 - 8.5"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="soilTexture">Soil Texture</label>
+                <select id="soilTexture" name="soil_texture_id" required>
+                  <option value="" disabled selected>Select Texture</option>
+                  <!-- Options populated via JS or hardcoded based on Enum -->
+                  <option value="1">Sand</option>
+                  <option value="2">Loamy Sand</option>
+                  <option value="3">Sandy Loam</option>
+                  <option value="4">Loam</option>
+                  <option value="5">Silty Loam</option>
+                  <option value="6">Silt</option>
+                  <option value="7">Sandy Clay Loam</option>
+                  <option value="8">Clay Loam</option>
+                  <option value="9">Silty Clay Loam</option>
+                  <option value="10">Sandy Clay</option>
+                  <option value="11">Silty Clay</option>
+                  <option value="12">Clay</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="area">Farm Area (ha)</label>
+                <input
+                  type="number"
+                  id="area"
+                  name="area_ha"
+                  min="0"
+                  max="100"
+                  step="0.001"
+                  required
+                  placeholder="0 - 100"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="latitude">Latitude</label>
+                <input
+                  type="number"
+                  id="latitude"
+                  name="latitude"
+                  min="-90"
+                  max="90"
+                  step="0.00001"
+                  required
+                  placeholder="-90 to 90"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="longitude">Longitude</label>
+                <input
+                  type="number"
+                  id="longitude"
+                  name="longitude"
+                  min="-180"
+                  max="180"
+                  step="0.00001"
+                  required
+                  placeholder="-180 to 180"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="slope">Slope (degrees)</label>
+                <input
+                  type="number"
+                  id="slope"
+                  name="slope"
+                  min="0"
+                  max="90"
+                  step="0.01"
+                  required
+                  placeholder="0 - 90"
+                />
+              </div>
+            </div>
+
+            <!-- Booleans / Checkboxes -->
+            <div class="form-checks">
+              <label class="checkbox-label">
+                <input type="checkbox" name="coastal" />
+                <span>Coastal Environment</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="riparian" />
+                <span>Riparian (River Bank)</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="nitrogen_fixing" />
+                <span>Need Nitrogen Fixing</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="shade_tolerant" />
+                <span>Need Shade Tolerant</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="bank_stabilising" />
+                <span>Need Bank Stabilising</span>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="submit-btn">
+                Generate Recommendations
+              </button>
+            </div>
+          </form>
         </div>
 
-        <form id="farmForm" class="farm-form">
-          <div class="form-grid">
-            <!-- Physical Properties -->
-            <div class="form-group">
-              <label for="rainfall">Annual Rainfall (mm)</label>
-              <input type="number" id="rainfall" name="rainfall_mm" min="1000" max="3000" required
-                placeholder="1000 - 3000" />
-            </div>
-
-            <div class="form-group">
-              <label for="temperature">Avg Temperature (°C)</label>
-              <input type="number" id="temperature" name="temperature_celsius" min="15" max="30" required
-                placeholder="15 - 30" />
-            </div>
-
-            <div class="form-group">
-              <label for="elevation">Elevation (m)</label>
-              <input type="number" id="elevation" name="elevation_m" min="0" max="2963" required
-                placeholder="0 - 2963" />
-            </div>
-
-            <div class="form-group">
-              <label for="ph">Soil pH</label>
-              <input type="number" id="ph" name="ph" min="4.0" max="8.5" step="0.1" required placeholder="4.0 - 8.5" />
-            </div>
-
-            <div class="form-group">
-              <label for="soilTexture">Soil Texture</label>
-              <select id="soilTexture" name="soil_texture_id" required>
-                <option value="" disabled selected>Select Texture</option>
-                <!-- Options populated via JS or hardcoded based on Enum -->
-                <option value="1">Sand</option>
-                <option value="2">Loamy Sand</option>
-                <option value="3">Sandy Loam</option>
-                <option value="4">Loam</option>
-                <option value="5">Silty Loam</option>
-                <option value="6">Silt</option>
-                <option value="7">Sandy Clay Loam</option>
-                <option value="8">Clay Loam</option>
-                <option value="9">Silty Clay Loam</option>
-                <option value="10">Sandy Clay</option>
-                <option value="11">Silty Clay</option>
-                <option value="12">Clay</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="area">Farm Area (ha)</label>
-              <input type="number" id="area" name="area_ha" min="0" max="100" step="0.001" required
-                placeholder="0 - 100" />
-            </div>
-
-            <div class="form-group">
-              <label for="latitude">Latitude</label>
-              <input type="number" id="latitude" name="latitude" min="-90" max="90" step="0.00001" required
-                placeholder="-90 to 90" />
-            </div>
-
-            <div class="form-group">
-              <label for="longitude">Longitude</label>
-              <input type="number" id="longitude" name="longitude" min="-180" max="180" step="0.00001" required
-                placeholder="-180 to 180" />
-            </div>
-
-            <div class="form-group">
-              <label for="slope">Slope (degrees)</label>
-              <input type="number" id="slope" name="slope" min="0" max="90" step="0.01" required placeholder="0 - 90" />
-            </div>
+        <!-- Results Section (Initially Hidden) -->
+        <div id="resultsSection" class="card results-card" hidden>
+          <div class="results-header">
+            <h2>Recommended Species</h2>
+            <p>Based on your farm profile</p>
           </div>
-
-          <!-- Booleans / Checkboxes -->
-          <div class="form-checks">
-            <label class="checkbox-label">
-              <input type="checkbox" name="coastal" />
-              <span>Coastal Environment</span>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" name="riparian" />
-              <span>Riparian (River Bank)</span>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" name="nitrogen_fixing" />
-              <span>Need Nitrogen Fixing</span>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" name="shade_tolerant" />
-              <span>Need Shade Tolerant</span>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" name="bank_stabilising" />
-              <span>Need Bank Stabilising</span>
-            </label>
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="submit-btn">
-              Generate Recommendations
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Results Section (Initially Hidden) -->
-      <div id="resultsSection" class="card results-card" hidden>
-        <div class="results-header">
-          <h2>Recommended Species</h2>
-          <p>Based on your farm profile</p>
+          <div id="loadingSpinner" hidden>Loading...</div>
+          <div id="speciesList" class="species-grid"></div>
         </div>
-        <div id="loadingSpinner" hidden>Loading...</div>
-        <div id="speciesList" class="species-grid"></div>
       </div>
-    </div>
-  </main>
+    </main>
 
-  <script type="module" src="/src/recommendations.ts"></script>
-</body>
-
+    <script type="module" src="/src/recommendations.ts"></script>
+  </body>
 </html>
