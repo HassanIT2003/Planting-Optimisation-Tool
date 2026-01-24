@@ -70,9 +70,13 @@ interface RecommendationResponse {
 
 // DOM Elements
 const form = document.getElementById("farmForm") as HTMLFormElement;
-const resultsSection = document.getElementById("resultsSection") as HTMLDivElement;
+const resultsSection = document.getElementById(
+  "resultsSection"
+) as HTMLDivElement;
 const speciesList = document.getElementById("speciesList") as HTMLDivElement;
-const loadingSpinner = document.getElementById("loadingSpinner") as HTMLDivElement;
+const loadingSpinner = document.getElementById(
+  "loadingSpinner"
+) as HTMLDivElement;
 
 // Helper to get form data
 function getFormData(): FarmCreate {
@@ -102,7 +106,7 @@ async function createFarm(data: FarmCreate, token: string): Promise<FarmRead> {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
   });
@@ -116,13 +120,16 @@ async function createFarm(data: FarmCreate, token: string): Promise<FarmRead> {
 }
 
 // Helper to get recommendations
-async function getRecommendations(farmId: number, token: string): Promise<RecommendationResponse> {
+async function getRecommendations(
+  farmId: number,
+  token: string
+): Promise<RecommendationResponse> {
   const response = await fetch(`${API_BASE_URL}/recommendations/${farmId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (!response.ok) {
@@ -137,11 +144,12 @@ function renderRecommendations(recs: SpeciesRecommendation[]) {
   speciesList.innerHTML = "";
 
   if (recs.length === 0) {
-    speciesList.innerHTML = "<p>No suitable species found for this profile.</p>";
+    speciesList.innerHTML =
+      "<p>No suitable species found for this profile.</p>";
     return;
   }
 
-  recs.forEach((rec) => {
+  recs.forEach(rec => {
     const card = document.createElement("div");
     card.className = "species-card";
 
@@ -167,12 +175,14 @@ function renderRecommendations(recs: SpeciesRecommendation[]) {
 }
 
 // Event Listener
-form.addEventListener("submit", async (e) => {
+form.addEventListener("submit", async e => {
   e.preventDefault();
 
   try {
     // UI State: Loading
-    const submitBtn = form.querySelector("button[type='submit']") as HTMLButtonElement;
+    const submitBtn = form.querySelector(
+      "button[type='submit']"
+    ) as HTMLButtonElement;
     submitBtn.disabled = true;
     submitBtn.textContent = "Processing...";
 
@@ -183,7 +193,9 @@ form.addEventListener("submit", async (e) => {
     // 0. Authenticate
     const token = await getAccessToken();
     if (!token) {
-      throw new Error("Authentication failed. Please check backend credentials.");
+      throw new Error(
+        "Authentication failed. Please check backend credentials."
+      );
     }
 
     // 1. Create Farm
@@ -198,14 +210,15 @@ form.addEventListener("submit", async (e) => {
 
     // 3. Render
     renderRecommendations(recData.recommendations);
-
   } catch (error) {
     console.error(error);
     alert(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
     resultsSection.hidden = true;
   } finally {
     // UI State: Reset
-    const submitBtn = form.querySelector("button[type='submit']") as HTMLButtonElement;
+    const submitBtn = form.querySelector(
+      "button[type='submit']"
+    ) as HTMLButtonElement;
     submitBtn.disabled = false;
     submitBtn.textContent = "Generate Recommendations";
     loadingSpinner.hidden = true;

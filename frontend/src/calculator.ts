@@ -1,6 +1,5 @@
 import "./style.css";
 
-
 export { sum } from "./sum";
 
 // import { initSaplingCalculator } from "./sapling-calculator";
@@ -26,8 +25,6 @@ function initThemeToggle() {
     }
   });
 }
-
-
 
 function initStickyHeader() {
   const header = document.querySelector(".topbar") as HTMLElement | null;
@@ -72,4 +69,3 @@ if (document.readyState === "loading") {
 } else {
   setActiveNavForPage();
 }
-

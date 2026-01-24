@@ -1,6 +1,5 @@
 import "./style.css";
 
-
 const API_BASE_URL = "http://127.0.0.1:8081";
 
 interface SoilTexture {
@@ -92,7 +91,8 @@ async function fetchSpecies() {
     isLoaded = true;
   } catch (err) {
     console.error("Error fetching species:", err);
-    grid.innerHTML = "<p>Error loading species data. Please try again later.</p>";
+    grid.innerHTML =
+      "<p>Error loading species data. Please try again later.</p>";
   }
 }
 
@@ -188,14 +188,18 @@ function openModal(species: Species, imageUrl: string) {
         <p>${species.agroforestry_types.map(t => t.name).join(", ")}</p>
       </div>
 
-      ${benefits.length > 0 ? `
+      ${
+        benefits.length > 0
+          ? `
       <div class="detail-section">
         <h4>Key Benefits</h4>
         <ul>
           ${benefits.map(b => `<li>${b}</li>`).join("")}
         </ul>
       </div>
-      ` : ""}
+      `
+          : ""
+      }
     </div>
   `;
 
@@ -225,4 +229,3 @@ function init() {
 }
 
 init();
-
